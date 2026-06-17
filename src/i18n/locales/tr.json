@@ -1,0 +1,82 @@
+{
+  "common": {
+    "loading": "Yukleniyor...",
+    "error": "Hata",
+    "success": "Basarili",
+    "cancel": "Iptal",
+    "confirm": "Onayla",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Duzenle",
+    "back": "Geri",
+    "next": "Ileri",
+    "submit": "Gonder",
+    "search": "Ara",
+    "noResults": "Sonuc bulunamadi",
+    "actions": "Islemler",
+    "yes": "Evet",
+    "no": "Hayir"
+  },
+  "auth": {
+    "login": "Giris Yap",
+    "logout": "Cikis Yap",
+    "register": "Kayit Ol",
+    "email": "E-posta",
+    "password": "Sifre",
+    "forgotPassword": "Sifremi Unuttum",
+    "rememberMe": "Beni Hatirla",
+    "welcomeBack": "Tekrar Hos Geldiniz",
+    "signInToContinue": "Devam etmek icin giris yapin",
+    "loginSuccess": "Giris basarili",
+    "loginFailed": "Gecersiz e-posta veya sifre",
+    "enterEmailAndPassword": "Lutfen e-posta ve sifrenizi girin"
+  },
+  "navigation": {
+    "dashboard": "Kontrol Paneli",
+    "users": "Kullanicilar",
+    "settings": "Ayarlar",
+    "profile": "Profil"
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "invalidEmail": "Gecerli bir e-posta adresi girin",
+    "minLength": "En az {min} karakter olmali",
+    "maxLength": "En fazla {max} karakter olabilir"
+  },
+  "errors": {
+    "AUTH_INVALID_CREDENTIALS": "Gecersiz e-posta veya sifre",
+    "AUTH_TOKEN_EXPIRED": "Oturumunuz sona erdi, lutfen tekrar giris yapin",
+    "AUTH_USER_NOT_FOUND": "Kullanici bulunamadi",
+    "AUTH_USER_DISABLED": "Bu hesap devre disi birakilmis",
+    "USER_EMAIL_ALREADY_EXISTS": "Bu e-posta adresi zaten kullaniliyor",
+    "INTERNAL_ERROR": "Bir hata olustu, lutfen tekrar deneyin",
+    "NETWORK_ERROR": "Baglanti hatasi, internet baglantinizi kontrol edin",
+    "NOT_FOUND": "Sayfa bulunamadi",
+    "FORBIDDEN": "Bu islemi yapmaya yetkiniz yok"
+  },
+  "users": {
+    "title": "Kullanicilar",
+    "addUser": "Kullanici Ekle",
+    "editUser": "Kullanici Duzenle",
+    "deleteUser": "Kullanici Sil",
+    "confirmDelete": "Bu kullaniciyi silmek istediginize emin misiniz?",
+    "name": "Isim",
+    "role": "Rol",
+    "status": "Durum",
+    "createdAt": "Olusturulma Tarihi",
+    "searchUsers": "Kullanici ara..."
+  },
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "welcome": "Hos Geldiniz, {name}!",
+    "totalUsers": "Toplam Kullanici",
+    "activeUsers": "Aktif Kullanici",
+    "recentActivity": "Son Aktiviteler"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Hesap bilgilerinizi yonetin",
+    "updateSuccess": "Profil basariyla guncellendi",
+    "updateFailed": "Profil guncellenemedi"
+  }
+}

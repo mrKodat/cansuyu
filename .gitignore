@@ -1,0 +1,164 @@
+# ============================================
+# MONOREPO TEMPLATE - .gitignore
+# ============================================
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.output/
+.next/
+.nuxt/
+.turbo/
+*.tsbuildinfo
+
+# Package manager
+pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+
+# ============================================
+# IDE & Editors
+# ============================================
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+*~
+
+# ============================================
+# Environment & Secrets
+# ============================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+!.env.example
+
+# Credentials (NEVER commit these!)
+*.pem
+*.key
+*.p12
+*.p8
+*.jks
+*.keystore
+credentials.json
+secrets.json
+google-services.json
+GoogleService-Info.plist
+firebase-credentials.json
+service-account.json
+.secrets/
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+
+# ============================================
+# Testing & Coverage
+# ============================================
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+.vitest/
+
+# ============================================
+# Temporary files
+# ============================================
+tmp/
+temp/
+.tmp/
+.temp/
+.cache/
+
+# ============================================
+# Database
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+
+# Prisma
+apps/api/prisma/generated/
+# Note: Migrations should be tracked in version control
+# apps/api/prisma/migrations/
+
+# ============================================
+# API (Bun/Node)
+# ============================================
+apps/api/.env
+apps/api/dist/
+
+# ============================================
+# Admin (Vue)
+# ============================================
+apps/admin/.env
+apps/admin/dist/
+apps/admin/stats.html
+
+# ============================================
+# Mobile (Flutter)
+# ============================================
+apps/mobile/.dart_tool/
+apps/mobile/.packages
+apps/mobile/build/
+apps/mobile/*.iml
+apps/mobile/.metadata
+apps/mobile/pubspec.lock
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/
+apps/mobile/ios/Flutter/Flutter.framework
+apps/mobile/ios/Flutter/Flutter.podspec
+
+# ============================================
+# Generated files
+# ============================================
+*.generated.ts
+*.generated.dart
+*.g.dart
+*.freezed.dart
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.lnk
+
+# ============================================
+# Docker
+# ============================================
+docker-compose.override.yml
+.docker/
+
+# ============================================
+# Misc
+# ============================================
+.eslintcache
+.stylelintcache
+*.pid
+*.seed
+*.pid.lock
+.claude/
+.mcp.json
+TODO.md
+ENGINEERING_REVIEW.md
+tools/codegen/MOBILE_SYNC_ANALYSIS.md

@@ -1,0 +1,74 @@
+rules_version = '2';
+// Firestore Security Rules — Can Suyu Yardım admin
+// Deploy: firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function role() {
+      return userDoc().data.role;
+    }
+
+    function active() {
+      return userDoc().data.active == true;
+    }
+
+    function hasRole(roles) {
+      return signedIn() && active() && role() in roles;
+    }
+
+    // users/{uid}
+    match /users/{uid} {
+      allow read: if signedIn() && active();
+      allow create, update, delete: if hasRole(['admin']);
+    }
+
+    // beneficiaries
+    match /beneficiaries/{doc} {
+      allow read: if hasRole(['admin','manager','representative','viewer']);
+      allow create, update: if hasRole(['admin','manager','representative']);
+      allow delete: if hasRole(['admin','manager']);
+    }
+
+    // donors
+    match /donors/{doc} {
+      allow read: if hasRole(['admin','manager','representative','viewer']);
+      allow create, update: if hasRole(['admin','manager','representative']);
+      allow delete: if hasRole(['admin','manager']);
+    }
+
+    // aids
+    match /aids/{doc} {
+      allow read: if hasRole(['admin','manager','representative','viewer']);
+      allow create, update: if hasRole(['admin','manager','representative']);
+      allow delete: if hasRole(['admin','manager']);
+    }
+
+    // inventory + movements
+    match /inventory/{doc} {
+      allow read: if hasRole(['admin','manager','representative','viewer']);
+      allow create, update: if hasRole(['admin','manager']);
+      allow delete: if hasRole(['admin']);
+    }
+    match /inventoryMovements/{doc} {
+      allow read: if hasRole(['admin','manager','representative','viewer']);
+      allow create: if hasRole(['admin','manager','representative']);
+      allow update, delete: if hasRole(['admin']);
+    }
+
+    // applications — web formundan yazılabilir (public create), okuma yetkililere
+    match /applications/{doc} {
+      allow create: if true; // TODO: reCAPTCHA / rate-limit Functions ile sınırlandır
+      allow read, update: if hasRole(['admin','manager','representative']);
+      allow delete: if hasRole(['admin','manager']);
+    }
+  }
+}
