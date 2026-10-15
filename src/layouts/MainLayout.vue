@@ -46,6 +46,7 @@ const menuItems: MenuItem[] = [
   { label: 'Envanter', icon: 'pi pi-box', route: '/inventory', module: 'inventory' },
   { label: 'Başvurular', icon: 'pi pi-inbox', route: '/applications', module: 'applications' },
   { label: 'Temsilciler', icon: 'pi pi-id-card', route: '/representatives', adminOnly: true },
+  { label: 'Yedekleme', icon: 'pi pi-database', route: '/backup', adminOnly: true },
 ]
 
 const visibleItems = computed(() =>

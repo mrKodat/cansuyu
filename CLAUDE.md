@@ -30,7 +30,7 @@ src/
 ├── utils/           # search (TC doğrulama, token), format
 ├── router/          # rol & modül bazlı guard
 ├── layouts/         # MainLayout (sidebar + header)
-├── features/        # beneficiaries, aids, donors, inventory, representatives, applications, dashboard, auth
+├── features/        # beneficiaries, aids, donors, inventory, representatives, applications, backup, dashboard, auth
 └── assets/styles/   # SCSS değişkenler & mixin'ler
 ```
 

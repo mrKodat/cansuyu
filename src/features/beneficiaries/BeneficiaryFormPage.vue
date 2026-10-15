@@ -6,7 +6,7 @@ import { getBeneficiary, createBeneficiary, updateBeneficiary, findByNationalId 
 import type { Beneficiary, FamilyMember, IncomeSource, GovernmentBenefit, ExternalAidRecord, HouseholdAppliance } from '@/types'
 import { DefaultAppliances, DefaultCity, ElazigDistricts } from '@/types'
 import { isValidTcKimlik, isPlaceholderTc, normalize } from '@/utils/search'
-import { toUpperTr } from '@/utils/format'
+import { toUpperTr, checkPhone, formatPhone } from '@/utils/format'
 import { useAuthStore } from '@/stores/auth'
 
 import InputText from 'primevue/inputtext'
@@ -141,6 +141,8 @@ onMounted(async () => {
     if (b) {
       Object.assign(form, b)
       if (b.birthDate) birthDate.value = new Date(b.birthDate)
+      if (b.phone) form.phone = formatPhone(b.phone)
+      if (b.phoneAlt) form.phoneAlt = formatPhone(b.phoneAlt)
       // Eski kayıtlardaki "Palu" / "palu" gibi yazımları listedeki karşılığına eşle
       const match = ElazigDistricts.find((d) => normalize(d) === normalize(form.address.district))
       if (match) form.address.district = match
@@ -179,10 +181,21 @@ function tcError(tc: string): string | null {
 }
 
 function phoneError(phone: string | undefined): string | null {
-  if (!phone?.trim()) return null
-  const d = phone.replace(/\D/g, '')
-  if (d.length === 10 || (d.length === 11 && d.startsWith('0'))) return null
-  return 'Telefon numarası eksik veya hatalı görünüyor. Örnek: 0532 123 45 67'
+  const r = checkPhone(phone)
+  return r.ok ? null : r.reason
+}
+
+// Alandan çıkınca: geçerliyse "0532 123 45 67" biçimine getir, değilse hemen uyar
+function onPhoneBlur(field: 'phone' | 'phoneAlt') {
+  const r = checkPhone(form[field])
+  if (r.ok) form[field] = r.value ? formatPhone(r.value) : ''
+  else errors[field] = r.reason
+}
+
+// Kaydederken yalnızca rakam ("05321234567") sakla — arama token'ları ve görüntüleme bununla çalışır
+function phoneForSave(phone: string | undefined): string {
+  const r = checkPhone(phone)
+  return r.ok ? r.value : (phone ?? '')
 }
 
 async function validateStep(index: number): Promise<boolean> {
@@ -291,12 +304,13 @@ async function save() {
   saving.value = true
   try {
     if (birthDate.value) form.birthDate = birthDate.value.toISOString().slice(0, 10)
+    const payload = { ...form, phone: phoneForSave(form.phone), phoneAlt: phoneForSave(form.phoneAlt) }
     if (isEdit.value && id.value) {
-      await updateBeneficiary(id.value, form)
+      await updateBeneficiary(id.value, payload)
       toast.add({ severity: 'success', summary: 'Güncellendi', detail: 'Muhtaç kaydı güncellendi.', life: 3000 })
       router.push({ name: 'beneficiary-detail', params: { id: id.value } })
     } else {
-      const newId = await createBeneficiary(form)
+      const newId = await createBeneficiary(payload)
       toast.add({ severity: 'success', summary: 'Kaydedildi', detail: 'Yeni muhtaç kaydı oluşturuldu.', life: 3000 })
       router.push({ name: 'beneficiary-detail', params: { id: newId } })
     }
@@ -364,12 +378,12 @@ async function save() {
           <div class="field"><label>Medeni Durum</label><Select v-model="form.maritalStatus" :options="maritalOptions" option-label="label" option-value="value" placeholder="Seçiniz" fluid /></div>
           <div class="field" :class="{ 'field--error': errors.phone }">
             <label for="phone">Telefon</label>
-            <InputText id="phone" v-model="form.phone" inputmode="tel" :invalid="!!errors.phone" placeholder="0532 123 45 67" fluid />
+            <InputText id="phone" v-model="form.phone" inputmode="tel" :invalid="!!errors.phone" placeholder="0532 123 45 67" fluid @blur="onPhoneBlur('phone')" />
             <small v-if="errors.phone" class="field__error"><i class="pi pi-exclamation-circle" /> {{ errors.phone }}</small>
           </div>
           <div class="field" :class="{ 'field--error': errors.phoneAlt }">
             <label for="phoneAlt">Alternatif Telefon</label>
-            <InputText id="phoneAlt" v-model="form.phoneAlt" inputmode="tel" :invalid="!!errors.phoneAlt" fluid />
+            <InputText id="phoneAlt" v-model="form.phoneAlt" inputmode="tel" :invalid="!!errors.phoneAlt" placeholder="0532 123 45 67" fluid @blur="onPhoneBlur('phoneAlt')" />
             <small v-if="errors.phoneAlt" class="field__error"><i class="pi pi-exclamation-circle" /> {{ errors.phoneAlt }}</small>
           </div>
           <div class="field" :class="{ 'field--error': errors.email }">
