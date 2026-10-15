@@ -132,6 +132,23 @@ export const DefaultAppliances: string[] = [
   'Gardırop',
 ]
 
+// Yeni muhtaç kaydında varsayılan şehir ve bu şehrin ilçeleri (form listesinde seçilir).
+export const DefaultCity = 'ELAZIĞ'
+
+export const ElazigDistricts: string[] = [
+  'MERKEZ',
+  'AĞIN',
+  'ALACAKAYA',
+  'ARICAK',
+  'BASKİL',
+  'KARAKOÇAN',
+  'KEBAN',
+  'KOVANCILAR',
+  'MADEN',
+  'PALU',
+  'SİVRİCE',
+]
+
 export interface IncomeSource {
   type: string // maaş, emekli, kira, yardım vb.
   monthlyAmount: number

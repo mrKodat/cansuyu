@@ -42,6 +42,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'applications', name: 'applications', component: () => import('@/features/applications/ApplicationsPage.vue'), meta: { title: 'Başvurular', module: 'applications' } },
 
       { path: 'representatives', name: 'representatives', component: () => import('@/features/representatives/RepresentativesPage.vue'), meta: { title: 'Temsilciler', module: 'representatives', adminOnly: true } },
+
+      { path: 'backup', name: 'backup', component: () => import('@/features/backup/BackupPage.vue'), meta: { title: 'Yedekleme', adminOnly: true } },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/features/auth/NotFoundPage.vue') },

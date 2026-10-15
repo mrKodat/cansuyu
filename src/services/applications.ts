@@ -1,6 +1,6 @@
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
-  query, orderBy, limit, where, serverTimestamp,
+  query, orderBy, limit, where, serverTimestamp, getCountFromServer,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Application, ApplicationStatus } from '@/types'
@@ -23,6 +23,12 @@ export async function listApplications(status?: ApplicationStatus, max = 200): P
     })
   }
   return items
+}
+
+export async function countApplications(status?: ApplicationStatus): Promise<number> {
+  const q = status ? query(ref(), where('status', '==', status)) : ref()
+  const snap = await getCountFromServer(q)
+  return snap.data().count
 }
 
 function toMillis(v: unknown): number | null {

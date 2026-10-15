@@ -6,6 +6,7 @@ import type { Beneficiary, NeedLevel } from '@/types'
 import { NeedLevelLabels } from '@/types'
 import { useAuthStore } from '@/stores/auth'
 import { formatPhone } from '@/utils/format'
+import { normalize } from '@/utils/search'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -52,7 +53,8 @@ watch(search, () => {
 const filtered = computed(() =>
   items.value.filter((b) => {
     if (needFilter.value && b.needLevel !== needFilter.value) return false
-    if (cityFilter.value && !b.address?.city?.toLowerCase().includes(cityFilter.value.toLowerCase())) return false
+    // normalize: "ELAZIĞ" / "Elazığ" / "elazig" eşleşsin (toLowerCase "I"yı "ı" değil "i" yapar)
+    if (cityFilter.value && !normalize(b.address?.city).includes(normalize(cityFilter.value))) return false
     return true
   }),
 )
