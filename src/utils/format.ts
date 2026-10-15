@@ -43,3 +43,9 @@ export function formatPhone(value: string | null | undefined): string {
   }
   return value
 }
+
+// Türkçe büyük harf: "i" → "İ", "ı" → "I". Fazla boşlukları da temizler.
+export function toUpperTr(value: string | null | undefined): string {
+  if (!value) return ''
+  return value.toLocaleUpperCase('tr-TR').replace(/\s+/g, ' ').trim()
+}

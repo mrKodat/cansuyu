@@ -1,9 +1,9 @@
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
-  query, where, orderBy, limit, serverTimestamp,
+  query, where, orderBy, limit, serverTimestamp, getCountFromServer,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
-import type { Beneficiary } from '@/types'
+import type { Beneficiary, NeedLevel } from '@/types'
 import { normalize, tokensFrom, stripUndefined } from '@/utils/search'
 
 const COL = 'beneficiaries'
@@ -12,6 +12,14 @@ const ref = () => collection(db, COL)
 export async function listBeneficiaries(max = 200): Promise<Beneficiary[]> {
   const snap = await getDocs(query(ref(), orderBy('updatedAt', 'desc'), limit(max)))
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Beneficiary, 'id'>) }))
+}
+
+// Sayım sunucu tarafında yapılır (aggregation query): dokümanlar indirilmez,
+// bu yüzden kayıt sayısından bağımsız olarak doğru toplamı verir.
+export async function countBeneficiaries(needLevel?: NeedLevel): Promise<number> {
+  const q = needLevel ? query(ref(), where('needLevel', '==', needLevel)) : ref()
+  const snap = await getCountFromServer(q)
+  return snap.data().count
 }
 
 export async function searchBeneficiaries(term: string, max = 50): Promise<Beneficiary[]> {

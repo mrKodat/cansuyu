@@ -1,6 +1,6 @@
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
-  query, where, orderBy, limit, serverTimestamp,
+  query, where, orderBy, limit, serverTimestamp, getAggregateFromServer, sum,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Aid } from '@/types'
@@ -12,6 +12,15 @@ const ref = () => collection(db, COL)
 export async function listAids(max = 200): Promise<Aid[]> {
   const snap = await getDocs(query(ref(), orderBy('createdAt', 'desc'), limit(max)))
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Aid, 'id'>) }))
+}
+
+// Teslim edilmiş nakdi yardımların toplamı — sunucu tarafında hesaplanır.
+export async function sumDeliveredAmount(): Promise<number> {
+  const snap = await getAggregateFromServer(
+    query(ref(), where('status', '==', 'delivered')),
+    { total: sum('amount') },
+  )
+  return snap.data().total ?? 0
 }
 
 export async function listAidsByBeneficiary(beneficiaryId: string): Promise<Aid[]> {

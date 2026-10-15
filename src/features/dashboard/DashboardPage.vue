@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { listBeneficiaries } from '@/services/beneficiaries'
-import { listAids } from '@/services/aids'
+import { countBeneficiaries } from '@/services/beneficiaries'
+import { listAids, sumDeliveredAmount } from '@/services/aids'
 import { listInventory } from '@/services/inventory'
-import { listApplications } from '@/services/applications'
-import type { Beneficiary, Aid, InventoryItem, Application } from '@/types'
+import { listApplications, countApplications } from '@/services/applications'
+import type { Aid, InventoryItem, Application } from '@/types'
 import { AidTypeLabels } from '@/types'
 import { formatDateTime, formatCurrency } from '@/utils/format'
 import { useAuthStore } from '@/stores/auth'
@@ -19,24 +19,30 @@ import Column from 'primevue/column'
 const router = useRouter()
 const auth = useAuthStore()
 
-const beneficiaries = ref<Beneficiary[]>([])
+// KPI'lar sunucu tarafı sayım/toplam ile hesaplanır. Önceden ilk 500 kayıt indirilip
+// sayılıyordu; bu yüzden muhtaç sayısı 500'de takılı kalıyordu.
+const beneficiaryCount = ref(0)
+const criticalCount = ref(0)
+const totalDelivered = ref(0)
+const pendingApplicationCount = ref(0)
 const aids = ref<Aid[]>([])
 const inventory = ref<InventoryItem[]>([])
 const newApplications = ref<Application[]>([])
 const loading = ref(true)
 
-const totalDelivered = computed(() =>
-  aids.value.filter((a) => a.status === 'delivered').reduce((s, a) => s + (a.amount ?? 0), 0),
-)
-const criticalCount = computed(() => beneficiaries.value.filter((b) => b.needLevel === 'critical').length)
 const lowStock = computed(() => inventory.value.filter((i) => typeof i.lowStockThreshold === 'number' && i.quantity <= (i.lowStockThreshold ?? 0)))
-const recentAids = computed(() => aids.value.slice(0, 8))
 
 onMounted(async () => {
   try {
-    [beneficiaries.value, aids.value, inventory.value, newApplications.value] = await Promise.all([
-      listBeneficiaries(500),
-      listAids(100),
+    [
+      beneficiaryCount.value, criticalCount.value, totalDelivered.value, pendingApplicationCount.value,
+      aids.value, inventory.value, newApplications.value,
+    ] = await Promise.all([
+      countBeneficiaries(),
+      countBeneficiaries('critical'),
+      sumDeliveredAmount(),
+      countApplications('new'),
+      listAids(8),
       listInventory(),
       listApplications('new', 10),
     ])
@@ -61,7 +67,7 @@ onMounted(async () => {
       <Card class="kpi kpi--blue"><template #content>
         <div class="kpi__row">
           <div class="kpi__icon"><i class="pi pi-users" /></div>
-          <div><div class="kpi__label">Muhtaç</div><div class="kpi__value">{{ beneficiaries.length }}</div></div>
+          <div><div class="kpi__label">Muhtaç</div><div class="kpi__value">{{ beneficiaryCount }}</div></div>
         </div>
       </template></Card>
       <Card class="kpi kpi--red"><template #content>
@@ -79,7 +85,7 @@ onMounted(async () => {
       <Card class="kpi kpi--amber"><template #content>
         <div class="kpi__row">
           <div class="kpi__icon"><i class="pi pi-inbox" /></div>
-          <div><div class="kpi__label">Bekleyen Başvuru</div><div class="kpi__value">{{ newApplications.length }}</div></div>
+          <div><div class="kpi__label">Bekleyen Başvuru</div><div class="kpi__value">{{ pendingApplicationCount }}</div></div>
         </div>
       </template></Card>
     </div>
@@ -93,7 +99,7 @@ onMounted(async () => {
           </div>
         </template>
         <template #content>
-          <DataTable :value="recentAids" :loading="loading" size="small">
+          <DataTable :value="aids" :loading="loading" size="small">
             <template #empty><div class="empty">Henüz yardım kaydı yok.</div></template>
             <Column header="Tarih"><template #body="{ data }">{{ formatDateTime(data.deliveredAt || data.createdAt) }}</template></Column>
             <Column field="beneficiaryName" header="Muhtaç" />
